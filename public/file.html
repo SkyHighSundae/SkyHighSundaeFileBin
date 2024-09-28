@@ -1,0 +1,66 @@
+<!-- public/file.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+</head>
+<body>
+  <h1 id="title"></h1>
+  <div id="fileDetails"></div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const locale = getLocale();
+      document.title = locale.title;
+      document.getElementById('title').textContent = locale.title;
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const fileId = urlParams.get('id');
+
+      if (!fileId) {
+        document.getElementById('fileDetails').innerHTML = `<p>${locale.file_not_found}</p>`;
+        return;
+      }
+
+      fetch(`/file/${fileId}/details`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.error) {
+            document.getElementById('fileDetails').innerHTML = `<p>${locale.file_not_found}</p>`;
+          } else {
+            document.getElementById('fileDetails').innerHTML = `
+              <p>${locale.filename}: ${data.originalName}</p>
+              <p>${locale.size}: ${(data.size / (1024 * 1024)).toFixed(2)} MB</p>
+              <p>${locale.upload_date}: ${new Date(data.uploadDate).toLocaleString()}</p>
+              <a href="/download/${data.id}"><button>${locale.download}</button></a>
+            `;
+          }
+        });
+
+      function getLocale() {
+        const languages = navigator.languages || [navigator.language || navigator.userLanguage];
+        const lang = languages[0].split('-')[0];
+        let localeData = null;
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', `/locales/${lang}.json`, false);
+        xhr.onload = () => {
+          if (xhr.status === 200) {
+            localeData = JSON.parse(xhr.responseText);
+          } else {
+            xhr.open('GET', '/locales/en.json', false);
+            xhr.send();
+            if (xhr.status === 200) {
+              localeData = JSON.parse(xhr.responseText);
+            }
+          }
+        };
+        xhr.send();
+        return localeData;
+      }
+    });
+  </script>
+</body>
+</html>

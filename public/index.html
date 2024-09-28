@@ -1,0 +1,30 @@
+<!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <meta name="description" content="">
+  <meta property="og:title" content="">
+  <meta property="og:description" content="">
+  <meta property="og:image" content="/images/logo.png">
+  <link rel="stylesheet" href="css/styles.css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+</head>
+<body>
+  <h1 id="title"></h1>
+  <input type="file" id="fileInput" />
+  <button id="uploadBtn"></button>
+  <p><a href="/rules" id="rulesLink"></a> | <a href="/admin" id="adminPanelLink"></a></p>
+
+  <div id="progressContainer" style="display: none;">
+    <progress id="progressBar" value="0" max="100"></progress>
+    <p id="progressStatus"></p>
+    <p id="speedStatus"></p>
+    <p id="timeStatus"></p>
+    <button id="cancelBtn"></button>
+  </div>
+
+  <script src="js/script.js"></script>
+</body>
+</html>

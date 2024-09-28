@@ -1,0 +1,147 @@
+<!-- public/admin.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+</head>
+<body>
+  <h1 id="title"></h1>
+
+  <div id="loginContainer">
+    <input type="password" id="adminKey" placeholder="">
+    <button id="loginBtn"></button>
+  </div>
+
+  <div id="adminContent" style="display: none;">
+    <h2 id="uploadedFilesTitle"></h2>
+    <table id="filesTable">
+      <tr>
+        <th>ID</th>
+        <th id="originalNameHeader"></th>
+        <th id="sizeHeader"></th>
+        <th id="actionsHeader"></th>
+      </tr>
+    </table>
+
+    <h2 id="banIpTitle"></h2>
+    <input type="text" id="ipToBan" placeholder="">
+    <button id="banBtn"></button>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const locale = getLocale();
+
+      // Set localized text
+      document.title = locale.admin_panel;
+      document.getElementById('title').textContent = locale.admin_panel;
+      document.getElementById('adminKey').setAttribute('placeholder', locale.enter_admin_key);
+      document.getElementById('loginBtn').textContent = locale.login;
+      document.getElementById('uploadedFilesTitle').textContent = locale.uploaded_files;
+      document.getElementById('originalNameHeader').textContent = locale.original_name;
+      document.getElementById('sizeHeader').textContent = locale.size_mb;
+      document.getElementById('actionsHeader').textContent = locale.actions;
+      document.getElementById('banIpTitle').textContent = locale.ban_ip;
+      document.getElementById('ipToBan').setAttribute('placeholder', locale.enter_ip_to_ban);
+      document.getElementById('banBtn').textContent = locale.ban_ip_btn;
+
+      document.getElementById('loginBtn').addEventListener('click', () => {
+        const adminKey = document.getElementById('adminKey').value;
+
+        if (!adminKey) return alert(locale.enter_admin_key);
+
+        fetch('/admin/files?key=' + adminKey)
+          .then(response => {
+            if (response.status === 401) {
+              alert(locale.unauthorized);
+            } else {
+              return response.json();
+            }
+          })
+          .then(data => {
+            if (data) {
+              // Hide login form and show admin content
+              document.getElementById('loginContainer').style.display = 'none';
+              document.getElementById('adminContent').style.display = 'block';
+              populateFilesTable(data);
+              setupBanIP(adminKey);
+              setupDeleteFile(adminKey);
+            }
+          });
+      });
+
+      function populateFilesTable(filesData) {
+        const filesTable = document.getElementById('filesTable');
+        for (const id in filesData) {
+          const file = filesData[id];
+          const row = filesTable.insertRow();
+          row.insertCell(0).textContent = id;
+          row.insertCell(1).textContent = file.originalName;
+          row.insertCell(2).textContent = (file.size / (1024 * 1024)).toFixed(2);
+          const actionsCell = row.insertCell(3);
+          actionsCell.innerHTML = `<button class="deleteBtn" data-id="${id}">${locale.delete}</button>`;
+        }
+      }
+
+      function setupBanIP(adminKey) {
+        document.getElementById('banBtn').addEventListener('click', () => {
+          const ip = document.getElementById('ipToBan').value;
+          if (!ip) return alert(locale.enter_ip_to_ban);
+
+          fetch('/admin/ban', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-admin-key': adminKey
+            },
+            body: JSON.stringify({ ip })
+          })
+          .then(response => response.json())
+          .then(data => alert(data.message));
+        });
+      }
+
+      function setupDeleteFile(adminKey) {
+        document.querySelectorAll('.deleteBtn').forEach(button => {
+          button.addEventListener('click', () => {
+            const id = button.getAttribute('data-id');
+            fetch('/admin/files/' + id + '?key=' + adminKey, {
+              method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+              alert(data.message);
+              location.reload();
+            });
+          });
+        });
+      }
+
+      function getLocale() {
+        const languages = navigator.languages || [navigator.language || navigator.userLanguage];
+        const lang = languages[0].split('-')[0];
+        let localeData = null;
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', `/locales/${lang}.json`, false);
+        xhr.onload = () => {
+          if (xhr.status === 200) {
+            localeData = JSON.parse(xhr.responseText);
+          } else {
+            xhr.open('GET', '/locales/en.json', false);
+            xhr.send();
+            if (xhr.status === 200) {
+              localeData = JSON.parse(xhr.responseText);
+            }
+          }
+        };
+        xhr.send();
+        return localeData;
+      }
+    });
+  </script>
+</body>
+</html>

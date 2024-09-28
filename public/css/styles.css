@@ -1,0 +1,124 @@
+/* public/css/styles.css */
+
+body {
+  background-color: #121212;
+  color: #ffffff;
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+}
+
+input[type="file"],
+input[type="password"],
+input[type="text"] {
+  display: block;
+  margin: 20px auto;
+  width: 300px;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #1e1e1e;
+  border: 1px solid #333;
+  color: #ffffff;
+  border-radius: 5px;
+}
+
+input::placeholder {
+  color: #aaaaaa;
+}
+
+button {
+  display: block;
+  margin: 10px auto;
+  background-color: #1e88e5;
+  color: #ffffff;
+  border: none;
+  padding: 15px 30px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #1565c0;
+}
+
+a {
+  color: #1e88e5;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+#progressContainer {
+  text-align: center;
+  margin-top: 20px;
+}
+
+progress {
+  width: 100%;
+  height: 20px;
+}
+
+#progressStatus,
+#speedStatus,
+#timeStatus {
+  margin-top: 10px;
+}
+
+#cancelBtn {
+  margin-top: 20px;
+  background-color: #e53935;
+}
+
+#cancelBtn:hover {
+  background-color: #c62828;
+}
+
+/* Center the login container */
+#loginContainer {
+  text-align: center;
+  margin-top: 50px;
+}
+
+/* Style the admin content */
+#adminContent {
+  margin-top: 30px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+table, th, td {
+  border: 1px solid #ffffff;
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+}
+
+th {
+  background-color: #1e1e1e;
+}
+
+.deleteBtn {
+  background-color: #e53935;
+  color: #ffffff;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.deleteBtn:hover {
+  background-color: #c62828;
+}
